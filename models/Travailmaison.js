@@ -3,7 +3,7 @@ let ObjectId = require('mongodb').ObjectID;
 const Travailmaison = new mongoose.Schema({
 
     idEtudiant: { type: ObjectId }, 
-    idFormatteur: { type: String }, 
+    idFormatteur: { type: ObjectId }, 
     file: { type: String }, 
     date: { type: String }, 
     description: { type: String }, 

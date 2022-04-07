@@ -1,6 +1,7 @@
 const express = require('express');
 const Travailmaison = require('../models/Travailmaison');
 const multer = require('multer');
+const mongoose = require('mongoose');
 const router = express.Router();
 
 filename = '';
@@ -18,24 +19,24 @@ const storage2 = multer.diskStorage(
 );
 const upload = multer({ storage: storage2 });
 // ajouter travail maison
-router.post('/add' ,upload.single('file'), (req, res)=>{
+router.post('/add', upload.single('file'), (req, res) => {
 
     let TravailFromreq = req.body;
     let Travail1 = new Travailmaison(TravailFromreq);
     Travail1.file = filename;
 
     Travail1.save().then(
-        (saved)=>{
+        (saved) => {
             filename = '';
             res.send(saved);
         },
-        (err)=>{
+        (err) => {
             console.log(err)
             res.send(err)
-            
+
         }
     );
-})  
+})
 // get all travail maison 
 router.get('/getall', (req, res) => {
     Travailmaison.find().then(
@@ -96,21 +97,54 @@ router.get('/getbyidformatteur/:id', (req, res) => {
                 }
             }
         ])
-    
-    .then(
-        (data) => {
-            res.send(data);
-            console.log(data)
-        },
-        (err) => {
-            res.send(err);
-        }
-    );
+
+        .then(
+            (data) => {
+                res.send(data);
+                console.log(data)
+            },
+            (err) => {
+                res.send(err);
+            }
+        );
 })
 // get depot by id etudiant 
 router.get('/getbyidetudiant/:id', (req, res) => {
     let idEtudiant = req.params.id;
-    Travailmaison.find({ idEtudiant: idEtudiant }).then(
+    const { ObjectId } = require('mongodb');
+    const _id = ObjectId(idEtudiant);
+    console.log(_id);
+    Travailmaison.aggregate(
+        [
+            {
+                $match: {
+                    idEtudiant: _id 
+                }
+            },
+
+            {
+                $lookup: {
+                    from: "formatteurs",
+                    localField: "idFormatteur",
+                    foreignField: "_id",
+                    as: "formatteur"
+                }
+            }
+        ])
+        .then(
+            (data) => {
+                res.send(data);
+                console.log(data)
+            },
+            (err) => {
+                res.send(err);
+            }
+        );
+})
+// get by id 
+router.get('/getbyid/:id', (req, res) => {
+    let id = req.params.id;
+    Travailmaison.findOne({ _id: id }).then(
         (data) => {
             res.send(data);
         },
@@ -123,5 +157,4 @@ router.get('/getbyidetudiant/:id', (req, res) => {
 
 
 
-
-module.exports=router;
+module.exports = router;

@@ -4,7 +4,8 @@ const Emploi = new mongoose.Schema({
 
     title: { type: String },
     description: { type: String },
-    date_heur: { type: String },
+    date_debut: { type: String },
+    date_fin: { type: String },
     idFormation: { type: ObjectId },
 });
 
