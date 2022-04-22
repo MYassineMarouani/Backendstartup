@@ -4,6 +4,7 @@ const Travailmaison = new mongoose.Schema({
 
     idEtudiant: { type: ObjectId }, 
     idFormatteur: { type: ObjectId }, 
+    idFormation: { type: ObjectId },
     file: { type: String }, 
     date: { type: String }, 
     description: { type: String }, 

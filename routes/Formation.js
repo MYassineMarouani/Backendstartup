@@ -105,4 +105,16 @@ router.put('/update/:id', upload.single('image'), (req, res) => {
         }
     );
 });
+// get formations by id formatteur 
+router.get('/getformationsbyidformatteur/:id', (req, res) => {
+    let id = req.params.id;
+    Formation.find({ formatteur: id }).then(
+        (data) => {
+            res.send(data);
+        },
+        (err) => {
+            res.send(err);
+        }
+    );
+})
 module.exports = router;

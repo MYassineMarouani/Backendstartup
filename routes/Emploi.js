@@ -5,6 +5,7 @@ const router = express.Router();
 const multer = require('multer');
 const Emploi = require('../models/Emploi');
 const Formation = require('../models/Formation');
+let ObjectId = require('mongodb').ObjectID;
 
 // ajout d'un nouvelle emploi = working 
 router.post('/add', (req, res) => {
@@ -40,6 +41,65 @@ router.get('/getall', (req, res) => {
         }
     )
 });
+
+router.get('/getmyemplois/:id' , (req, res)=>{
+    id = req.params.id
+    console.log(id);
+    myFormations = [];
+    Formation.find()
+        .then(
+            (formations)=>{
+                for(let f of formations){
+                    for(let g of f.groupe){
+                        if (id == g._id){
+                            let fId = new ObjectId(f._id)
+                            myFormations.push(fId);
+                        }
+                    }
+                }
+
+                Emploi.find({ idFormation: { $in: myFormations }  })
+                    .then(
+                        (data)=>{
+                            console.log(data);
+                            res.send(data);
+                        }
+                    )
+
+            }
+        )
+
+})
+
+router.get('/getfemplois/:id' , (req, res)=>{
+    id = req.params.id
+    console.log(id);
+    myFormations = [];
+    Formation.find()
+        .then(
+            (formations)=>{
+                for(let f of formations){
+                    if (id == f.formatteur){
+                        let fId = new ObjectId(f._id)
+                        myFormations.push(fId);
+                    }
+                }
+
+                Emploi.find({ idFormation: { $in: myFormations }  })
+                    .then(
+                        (data)=>{
+                            console.log(data);
+                            res.send(data);
+                        }
+                    )
+
+            }
+        )
+
+})
+
+
+
 // delete = 100% working 
 router.delete('/delete/:id', (req, res) => {
     id = req.params.id;

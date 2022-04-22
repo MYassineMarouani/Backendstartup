@@ -3,6 +3,7 @@ const Travailmaison = require('../models/Travailmaison');
 const multer = require('multer');
 const mongoose = require('mongoose');
 const router = express.Router();
+let ObjectId = require('mongodb').ObjectID;
 
 filename = '';
 const storage2 = multer.diskStorage(
@@ -84,7 +85,7 @@ router.get('/getbyidformatteur/:id', (req, res) => {
         [
             {
                 $match: {
-                    idFormatteur: { $regex: idFormatteur }
+                    idFormatteur: new ObjectId(idFormatteur) 
                 }
             },
 
@@ -95,6 +96,14 @@ router.get('/getbyidformatteur/:id', (req, res) => {
                     foreignField: "_id",
                     as: "etudiant"
                 }
+            },
+            {
+                $lookup: {
+                    from: "formations",
+                    localField: "idFormation",
+                    foreignField: "_id",
+                    as: "formation"
+                }
             }
         ])
 
@@ -104,6 +113,7 @@ router.get('/getbyidformatteur/:id', (req, res) => {
                 console.log(data)
             },
             (err) => {
+                console.log(err);
                 res.send(err);
             }
         );
@@ -128,6 +138,14 @@ router.get('/getbyidetudiant/:id', (req, res) => {
                     localField: "idFormatteur",
                     foreignField: "_id",
                     as: "formatteur"
+                }
+            },
+            {
+                $lookup: {
+                    from: "formations",
+                    localField: "idFormation",
+                    foreignField: "_id",
+                    as: "formation"
                 }
             }
         ])
